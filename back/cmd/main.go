@@ -1,28 +1,22 @@
 package main
 
 import (
-    "net/http"
-    "log/slog"
-    "fmt"
+	"log/slog"
+	"net/http"
+	"sushiroll/internal/handlers"
 )
 
 func main() {
-    addr := ":8080"
+	addr := ":8080"
 
-    mux := http.NewServeMux()
+	mux := handlers.SetupRoutes()
 
-    mux.HandleFunc("/", helloWorldHandler)
+	server := &http.Server{
+		Addr:    addr,
+		Handler: mux,
+	}
 
-    server := &http.Server{
-        Addr: addr,
-        Handler: mux,
-    }
-
-    slog.Info("Starting web server", "addr", addr)
-    err := server.ListenAndServe()
-    panic(err)
-}
-
-func helloWorldHandler(w http.ResponseWriter, r *http.Request) {
-    fmt.Fprintf(w, "Hello world :3")
+	slog.Info("Starting web server", "addr", addr)
+	err := server.ListenAndServe()
+	panic(err)
 }
